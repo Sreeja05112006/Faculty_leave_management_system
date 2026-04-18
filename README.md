@@ -1,5 +1,8 @@
 # Faculty_leave_management_system
-# The Faculty Leave Management System is a web-based application developed to automate and simplify the process of managing faculty leave requests in educational institutions.
-# The system is designed with two main modules: Faculty Module and Admin Module. The Faculty Module allows users to log in securely, view their dashboard, check leave balances, apply for leave, and view leave history. The Admin Module provides facilities to manage faculty records, monitor leave applications, approve or reject requests, and generate reports. The application automatically calculates the number of leave days and updates leave balances after approval.
-# The project is developed using HTML, CSS, and JavaScript for the frontend, Node.js with Express.js for backend development, and MySQL as the database.
-# In conclusion, the Faculty Leave Management System is an effective and user-friendly solution for modern educational institutions. It demonstrates the practical use of web technologies to solve real-world administrative problems and improve operational efficiency.
+The Faculty Leave Management System is a web-based application developed to automate and simplify the process of managing faculty leave requests in educational institutions.
+
+The system is designed with two main modules: Faculty Module and Admin Module. The Faculty Module allows users to log in securely, view their dashboard, check leave balances, apply for leave, and view leave history. The Admin Module provides facilities to manage faculty records, monitor leave applications, approve or reject requests, and generate reports. The application automatically calculates the number of leave days and updates leave balances after approval.
+
+The project is developed using HTML, CSS, and JavaScript for the frontend, Node.js with Express.js for backend development, and MySQL as the database.
+
+In conclusion, the Faculty Leave Management System is an effective and user-friendly solution for modern educational institutions. It demonstrates the practical use of web technologies to solve real-world administrative problems and improve operational efficiency.
