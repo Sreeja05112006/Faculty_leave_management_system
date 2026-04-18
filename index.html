@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="logo.jpeg">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+    <div class="login-box">
+        <img src="logo.jpeg" class="logo">
+        <h4>Kakatiya Institute of Technology and Science</h4>
+        <h2>Faculty Leave Management System</h2>
+        <form onsubmit="login(); return false;">
+            <label>Username</label>
+            <input type="email" id="username" placeholder="Enter Email" required>
+
+            <label>Password</label>
+            <div class="password-wrapper">
+                <input type="password" id="password" placeholder="Enter Password" required>
+                <i class="bx bx-low-vision" id="togglePassword"></i>
+            </div>           
+
+            <label>Login As</label>
+            <select id="role" class="input-field" required>
+                <option value="">Select Role</option>
+                <option value="admin">Admin</option>
+                <option value="faculty">Faculty</option>
+            </select>
+
+            <button type="submit">Login</button>
+        </form>
+    </div>
+    </div>
+    <script>
+const passwordField = document.getElementById("password");
+const toggleIcon = document.getElementById("togglePassword");
+
+toggleIcon.onclick = () => {
+    if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleIcon.classList.remove("bx-low-vision");
+        toggleIcon.classList.add("bx-show");
+    } else {
+        passwordField.type = "password";
+        toggleIcon.classList.remove("bx-show");
+        toggleIcon.classList.add("bx-low-vision");
+    }
+};
+</script>
+    <script>
+function login() {
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
+    let role = document.getElementById("role").value;
+
+    fetch("http://localhost:5000/auth/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password, role })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if (!data.success) {
+            alert(data.message);
+            return;
+        }
+
+        if (role === "faculty") {
+            // store faculty_id
+            localStorage.setItem("faculty_id", data.faculty_id);
+            localStorage.setItem("faculty_name", data.faculty_name);
+            localStorage.setItem("faculty_email", data.email);
+            localStorage.setItem("faculty_department", data.department);
+            window.location.href = "faculty_dashboard.html";
+        }
+
+        else if (role === "admin") {
+            // store admin_id
+            localStorage.setItem("admin_id", data.admin_id);
+            window.location.href = "admin_dashboard.html";
+        }
+    });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <link href="admin_employees.css" rel="stylesheet">
+</head>
+<body>
+    <script>
+if (!localStorage.getItem("admin_id")) {
+    window.location.href = "index.html";
+}
+</script>
+    <div class="sidebar">
+        <div class="sidebar-content">
+            <div class="logo">
+                <img src="logo.jpeg" class="logo-img"> 
+                <span class="logo-name">Admin</span>
+            </div>
+            <ul class="lists">
+                <li class="list">
+                    <a href="admin_dashboard.html" class="nav-link" id="nav-link">
+                        <i class="bx bx-home-alt icon"></i>
+                        <span class="link">Dashboard</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="admin_employees.html" class="nav-link" id="nav-link">
+                        <i class="bx bx-group icon"></i>
+                        <span class="link">Employees List</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="admin_leave.html" class="nav-link">
+                        <i class="bx bx-calendar-event icon"></i>
+                        <span class="link">Leave Applications</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="admin_reports.html" class="nav-link">
+                        <i class="bx bx-line-chart icon"></i>
+                        <span class="link">Reports</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="index.html" class="nav-link" onclick="localStorage.clear()">
+    <i class="bx bx-log-out icon"></i>
+    <span class="link">Logout</span>
+</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="container">
+
+    <div class="header">
+        <h2>Employees List</h2>
+        <button id="addBtn" class="top-btn">+ Add Employee</button>
+        <button id="cancelBtn" class="top-btn" style="display:none;">Cancel</button>
+    </div>
+
+    <!-- ADD EMPLOYEE FORM -->
+    <div id="formSection" class="card" style="display:none;">
+        <h3>Add New Employee</h3>
+
+        <div class="form-grid">
+            <div>
+                <label>Full Name *</label>
+                <input id="name" type="text" required>
+            </div>
+
+            <div>
+                <label>Email *</label>
+                <input id="email" type="email" required> 
+            </div>
+
+            <div>
+                <label>Password *</label>
+                <input id="password" type="password" required>
+            </div>
+
+            <div>
+                <label>Employee ID</label>
+                <input id="emp_id" type="text">
+            </div>
+        </div>
+
+        <div>
+            <label>Department</label>
+            <select id="department" class="full" required>
+                <option value="">Select Department</option>
+                <option>Computer Science and Engineering (CSE)</option>
+                <option>Information Technology (IT)</option>
+                <option>Electronics and Communication Engineering (ECE)</option>
+                <option>Electrical and Electronics Engineering (EEE)</option>
+                <option>Mechanical Engineering (ME)</option>
+                <option>Civil Engineering (CE)</option>
+            </select>
+        </div>
+
+        <button class="submit-btn">Add Employee</button>
+    </div>
+
+    <!-- EMPLOYEE TABLE -->
+    <div id="tableSection" class="card">
+        <table>
+            <tr>
+                <th>Employee ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Joined Date</th>
+            </tr>
+
+            <tr>
+                <td>EMP001</td>
+                <td>Rajesh</td>
+                <td>rajesh@kitsw.ac.in</td>
+                <td>Computer Science</td>
+                <td>21/03/2026</td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+    <script src="admin_employees.js"></script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet">
+    <link href="faculty.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <script>
+if (!localStorage.getItem("faculty_id")) {
+    window.location.href = "index.html";
+}
+</script>
+    <div class="sidebar">
+        <div class="sidebar-content">
+            <div class="logo">
+                <img src="logo.jpeg" class="logo-img"> 
+                <span class="logo-name">Faculty</span>
+            </div>
+            <ul class="lists">
+                <li class="list">
+                    <a href="faculty_dashboard.html" class="nav-link" id="nav-link">
+                        <i class="bx bx-home-alt icon"></i>
+                        <span class="link">Dashboard</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="faculty_apply.html" class="nav-link" id="nav-link">
+                        <i class="bx bx-plus-circle icon"></i>
+                        <span class="link">Apply Leave</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="faculty_myApplications.html" class="nav-link">
+                        <i class="bx bx-history icon"></i>
+                        <span class="link">Leave History</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="index.html" class="nav-link" onclick="localStorage.clear()">
+    <i class="bx bx-log-out icon"></i>
+    <span class="link">Logout</span>
+</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="container">
+        <h1 id="welcomeText">Welcome</h1>
+        <div class="dashboard">
+
+    <!-- Top Section -->
+    <div class="top-section">
+
+        <!-- Leave Balance Table -->
+        <div class="card">
+            <h3>Leave Balances</h3>
+            <table>
+                <tr>
+                    <th>Leave Type</th>
+                    <th>Available</th>
+                    <th>Taken</th>
+                    <th>Total</th>
+                </tr>
+                <tr>
+                    <td>Academic Leave</td>
+                    <td>10</td>
+                    <td>0</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <td>Casual Leave</td>
+                    <td>12</td>
+                    <td>0</td>
+                    <td>12</td>
+                </tr>
+                <tr>
+                    <td>Maternity Leave</td>
+                    <td>180</td>
+                    <td>0</td>
+                    <td>180</td>
+                </tr>
+                <tr>
+                    <td>Medical Leave</td>
+                    <td>15</td>
+                    <td>0</td>
+                    <td>15</td>
+                </tr>
+                <tr>
+                    <td>Vacation Leave</td>
+                    <td>30</td>
+                    <td>0</td>
+                    <td>30</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Statistics -->
+        <div class="card">
+            <h3>Leave Application Statistics</h3>
+
+            <div class="stats">
+                <div class="stat-box total">
+                    <h2>0</h2>
+                    <p>Total Applications</p>
+                </div>
+
+                <div class="stat-box approved">
+                    <p>Approved</p>
+                </div>
+
+                <div class="stat-box rejected">
+                    <p>Rejected</p>
+                </div>
+
+                <div class="stat-box pending">
+                    <p>Pending</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Bottom Section -->
+    <div class="card">
+        <h3>Recent Leave Applications</h3>
+
+        <table>
+            <tr>
+                <th>Leave Type</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Days</th>
+                <th>Reason</th>
+                <th>Status</th>
+            </tr>
+        </table>
+    </div>
+
+</div>
+    </div>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+    const name = localStorage.getItem("faculty_name");
+    document.getElementById("welcomeText").textContent = "Welcome, " + name;
+});
+</script>
+<script>
+const faculty_id = localStorage.getItem("faculty_id");
+
+// Load stats
+fetch(`http://localhost:5000/faculty/my-applications/${faculty_id}`)
+    .then(res => res.json())
+    .then(data => {
+        let total = data.length;
+        let approved = data.filter(x => x.status === "approved").length;
+        let rejected = data.filter(x => x.status === "rejected").length;
+        let pending = data.filter(x => x.status === "pending").length;
+
+        document.querySelector(".stat-box.total h2").textContent = total;
+        document.querySelector(".stat-box.approved p").textContent = `Approved (${approved})`;
+        document.querySelector(".stat-box.rejected p").textContent = `Rejected (${rejected})`;
+        document.querySelector(".stat-box.pending p").textContent = `Pending (${pending})`;
+
+        // Recent table
+        let table = document.querySelector(".container table");
+        data.forEach(row => {
+            table.innerHTML += `
+                <tr>
+                    <td>${row.leave_type}</td>
+                    <td>${formatDate(row.from_date)}</td>
+                    <td>${formatDate(row.to_date)}</td>
+                    <td>${row.days}</td>
+                    <td>${row.reason}</td>
+                    <td>${row.status}</td>
+                </tr>
+            `;
+        });
+    });
+</script>
+</body>
+</html>

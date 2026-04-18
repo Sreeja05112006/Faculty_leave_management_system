@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply</title>
+    <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet">
+    <link href="faculty_apply.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <script>
+if (!localStorage.getItem("faculty_id")) {
+    window.location.href = "index.html";
+}
+</script>
+    <div class="sidebar">
+        <div class="sidebar-content">
+            <div class="logo">
+                <img src="logo.jpeg" class="logo-img"> 
+                <span class="logo-name">Faculty</span>
+            </div>
+            <ul class="lists">
+                <li class="list">
+                    <a href="faculty_dashboard.html" class="nav-link">
+                        <i class="bx bx-home-alt icon"></i>
+                        <span class="link">Dashboard</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="faculty_apply.html" class="nav-link">
+                        <i class="bx bx-plus-circle icon"></i>
+                        <span class="link">Apply Leave</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="faculty_myApplications.html" class="nav-link">
+                        <i class="bx bx-history icon"></i>
+                        <span class="link">Leave History</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="index.html" class="nav-link" onclick="localStorage.clear()">
+    <i class="bx bx-log-out icon"></i>
+    <span class="link">Logout</span>
+</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="main">
+
+    <div class="form-container">
+
+        <h2 class="form-title">Leave Application Form</h2>
+
+        <form  onsubmit="applyLeave(); return false;">
+
+            <label>Leave Type</label>
+            <select class="input-field" id="leaveType" required>
+                <option value="" selected>Select Leave Type</option>
+                <option value="AL" data-id="1">Academic Leave</option>
+                <option value="CL" data-id="2">Casual Leave</option>
+                <option value="ML" data-id="3">Maternity Leave</option>
+                <option value="SL" data-id="4">Medical Leave</option>
+                <option value="VL" data-id="5">Vacation Leave</option>
+            </select>
+
+            <div class="row">
+                <div class="col">
+                    <label>From Date</label>
+                    <input type="date" id="fromDate" class="input-field" required>
+                </div>
+
+                <div class="col">
+                    <label>To Date</label>
+                    <input type="date" id="toDate" class="input-field" required>
+                </div>
+            </div>
+
+            <label>Number of Days</label>
+            <input type="number" id="days" class="input-field" readonly>
+
+            <label>Reason for Leave</label>
+            <textarea class="input-field" id="reason" rows="3"></textarea>
+
+            <div class="alert-success" role="alert" id="successMsg" style="display: none;">
+                Leave Request Submitted
+            </div>
+            <button class="btn" >Submit</button>
+
+        </form>
+    </div>
+</div>
+<script>
+
+// AUTO-CALCULATE DAYS (you already had this)
+const fromDate = document.getElementById("fromDate");
+const toDate = document.getElementById("toDate");
+const daysField = document.getElementById("days");
+
+fromDate.addEventListener("change", calculateDays);
+toDate.addEventListener("change", calculateDays);
+
+function calculateDays() {
+    if (fromDate.value && toDate.value) {
+        let start = new Date(fromDate.value);
+        let end = new Date(toDate.value);
+
+        let diffTime = end - start;
+        let diffDays = diffTime / (1000 * 60 * 60 * 24) + 1;
+
+        if (diffDays > 0) {
+            daysField.value = diffDays;
+        } else {
+            daysField.value = "";
+            alert("To Date must be after From Date");
+        }
+    }
+}
+
+
+
+// ---------------- BACKEND CONNECTION ----------------
+function applyLeave() {
+
+    const faculty_id = localStorage.getItem("faculty_id"); 
+    let leaveTypeDropdown = document.getElementById("leaveType");
+    let leave_type_id = leaveTypeDropdown.options[leaveTypeDropdown.selectedIndex].dataset.id;
+
+    const data = {
+        faculty_id: faculty_id,
+        leave_type: document.getElementById("leaveType").value,
+        leave_type_id: leave_type_id,
+        from_date: document.getElementById("fromDate").value,
+        to_date: document.getElementById("toDate").value,
+        days: document.getElementById("days").value,
+        reason: document.getElementById("reason").value,
+        applied_on: new Date().toISOString().split("T")[0]
+    };
+
+    fetch("http://localhost:5000/faculty/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+.then(res => {
+    if (res.success) {
+        // SUCCESS MESSAGE
+        let msg = document.getElementById("successMsg");
+        msg.textContent = "Leave Request Submitted";
+        msg.style.background = "#d1e7dd";
+        msg.style.color = "#0f5132";
+        msg.style.display = "block";
+
+        setTimeout(() => msg.style.display = "none", 3000);
+
+        document.querySelector("form").reset();
+    } else {
+        // ERROR MESSAGE
+        let msg = document.getElementById("successMsg");
+        msg.textContent = res.message;
+        msg.style.background = "#f8d7da";
+        msg.style.color = "#842029";
+        msg.style.display = "block";
+
+        setTimeout(() => msg.style.display = "none", 4000);
+    }
+})
+    .catch(err => console.error(err));
+}
+</script>
+</body>
+</html>

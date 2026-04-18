@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <link href="admin.css" rel="stylesheet">
+</head>
+<body>
+    <script>
+if (!localStorage.getItem("admin_id")) {
+    window.location.href = "index.html";
+}
+</script>
+    <div class="sidebar">
+        <div class="sidebar-content">
+            <div class="logo">
+                <img src="logo.jpeg" class="logo-img"> 
+                <span class="logo-name">Admin</span>
+            </div>
+            <ul class="lists">
+                <li class="list">
+                    <a href="admin_dashboard.html" class="nav-link" id="nav-link">
+                        <i class="bx bx-home-alt icon"></i>
+                        <span class="link">Dashboard</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="admin_employees.html" class="nav-link" id="nav-link">
+                        <i class="bx bx-group icon"></i>
+                        <span class="link">Employees List</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="admin_leave.html" class="nav-link">
+                        <i class="bx bx-calendar-event icon"></i>
+                        <span class="link">Leave Applications</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="admin_reports.html" class="nav-link">
+                        <i class="bx bx-line-chart icon"></i>
+                        <span class="link">Reports</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="index.html" class="nav-link" onclick="localStorage.clear()">
+                        <i class="bx bx-log-out icon"></i>
+                        <span class="link">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="container">
+        <div class="greet">
+            <h1>Welcome, Admin</h1>
+        </div>
+        <div class="cards">
+
+        <div class="card blue">
+            <i class="bx bx-group"></i>
+            <h3>120</h3>
+            <p>Total Employees</p>
+        </div>
+
+        <div class="card gray">
+            <i class="bx bx-file"></i>
+            <h3>45</h3>
+            <p>Total Applications</p>
+        </div>
+
+        <div class="card yellow">
+            <i class="bx bx-time-five"></i>
+            <h3>10</h3>
+            <p>Pending</p>
+        </div>
+
+        <div class="card green">
+            <i class="bx bx-check-circle"></i>
+            <h3>25</h3>
+            <p>Approved</p>
+        </div>
+
+        <div class="card red">
+            <i class="bx bx-x-circle"></i>
+            <h3>10</h3>
+            <p>Rejected</p>
+        </div>
+        </div>
+        <div class="middle">
+
+        <!-- Chart -->
+        <div class="card chart-card">
+            <h3>Application Overview</h3>
+            <canvas id="myChart"></canvas>
+        </div>
+
+        <!-- Notifications -->
+        <div class="card" id="notificationsBox">
+            <h3>Notifications</h3>
+            <p id="notifyPending">🔔 0 new leave requests</p>
+            <p id="notifyApproved">✔ 0 approved today</p>
+            <p id="notifyRejected">❌ 0 rejected today</p>
+        </div>
+
+    </div>
+     <!-- Bottom Table -->
+    <div class="card">
+        <h3>Recent Applications</h3>
+
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Status</th>
+            </tr>
+        </table>
+    </div>
+    <!-- Chart Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    loadCounts();
+    loadRecentApplications();
+});
+
+// Load all stats for cards + chart
+function loadCounts() {
+    // 1️⃣ EMPLOYEE COUNT
+    fetch("http://localhost:5000/admin/employee-count")
+        .then(res => res.json())
+        .then(data => {
+            document.querySelectorAll(".card.blue h3")[0].innerText = data.total;
+        });
+    
+    // 2️⃣ LEAVE COUNTS (total, pending, approved, rejected)
+    fetch("http://localhost:5000/admin/leave-counts")
+        .then(res => res.json())
+        .then(data => {
+            const c = data.data;
+
+            document.querySelector(".card.gray h3").innerText = c.total;
+            document.querySelector(".card.yellow h3").innerText = c.pending;
+            document.querySelector(".card.green h3").innerText = c.approved;
+            document.querySelector(".card.red h3").innerText = c.rejected;
+
+            // notifications
+        document.getElementById("notifyPending").innerText =
+            `🔔 ${c.pending} new leave requests`;
+        document.getElementById("notifyApproved").innerText =
+            `✔ ${c.approved} approved`;
+        document.getElementById("notifyRejected").innerText =
+            `❌ ${c.rejected} rejected`;
+
+            updateChart(c.approved, c.pending, c.rejected);
+        });
+}
+
+// 3️⃣ RECENT APPLICATIONS TABLE
+function loadRecentApplications() {
+    fetch("http://localhost:5000/admin/leave-requests")
+        .then(res => res.json())
+        .then(data => {
+            let table = document.querySelector("table");
+
+            table.innerHTML = `
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                </tr>
+            `;
+
+            // Show ONLY last 3 applications
+            let recent = data.slice(-3).reverse();
+
+            recent.forEach(row => {
+                table.innerHTML += `
+                    <tr>
+                        <td>${row.name}</td>
+                        <td>${row.leave_type}</td>
+                        <td style="color: ${getColor(row.status)};">
+                            ${row.status}
+                        </td>
+                    </tr>
+                `;
+            });
+        });
+}
+
+// Status color helper
+function getColor(status) {
+    if (status === "approved") return "green";
+    if (status === "pending") return "orange";
+    if (status === "rejected") return "red";
+}
+
+// 4️⃣ UPDATE PIE CHART REAL-TIME
+let chart;
+
+function updateChart(approved, pending, rejected) {
+    const ctx = document.getElementById("myChart");
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(ctx, {
+        type: "pie",
+        data: {
+            labels: ["Approved", "Pending", "Rejected"],
+            datasets: [{
+                data: [approved, pending, rejected]
+            }]
+        }
+    });
+}
+</script>
+</body>
+</html>

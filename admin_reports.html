@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reports</title>
+    <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="admin_reports.css">
+</head>
+<body>
+    <script>
+if (!localStorage.getItem("admin_id")) {
+    window.location.href = "index.html";
+}
+</script>
+    <div class="sidebar">
+        <div class="sidebar-content">
+            <div class="logo">
+                <img src="logo.jpeg" class="logo-img"> 
+                <span class="logo-name">Admin</span>
+            </div>
+            <ul class="lists">
+                <li class="list">
+                    <a href="admin_dashboard.html" class="nav-link" id="nav-link">
+                        <i class="bx bx-home-alt icon"></i>
+                        <span class="link">Dashboard</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="admin_employees.html" class="nav-link" id="nav-link">
+                        <i class="bx bx-group icon"></i>
+                        <span class="link">Employees List</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="admin_leave.html" class="nav-link">
+                        <i class="bx bx-calendar-event icon"></i>
+                        <span class="link">Leave Applications</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="admin_reports.html" class="nav-link">
+                        <i class="bx bx-line-chart icon"></i>
+                        <span class="link">Reports</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="index.html" class="nav-link" onclick="localStorage.clear()">
+    <i class="bx bx-log-out icon"></i>
+    <span class="link">Logout</span>
+</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+<div class="container">
+
+    <h1>Reports & Analytics</h1>
+
+    <!-- Overall Stats -->
+    <h3>Overall Statistics</h3>
+    <div class="cards">
+
+        <div class="card">
+            <h2>3</h2>
+            <p>Total Employees</p>
+        </div>
+
+        <div class="card">
+            <h2>3</h2>
+            <p>Total Applications</p>
+        </div>
+
+        <div class="card yellow">
+            <h2>1</h2>
+            <p>Pending</p>
+        </div>
+
+        <div class="card green">
+            <h2>2</h2>
+            <p>Approved</p>
+        </div>
+
+        <div class="card red">
+            <h2>0</h2>
+            <p>Rejected</p>
+        </div>
+
+    </div>
+
+    <!-- Leave Type Breakdown -->
+    <h3>Leave Type Breakdown</h3>
+    <div class="card table-card">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Leave Type</th>
+                    <th>Total Applications</th>
+                    <th>Pending</th>
+                    <th>Approved</th>
+                    <th>Rejected</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>Casual Leave</td>
+                    <td>2</td>
+                    <td><span class="badge pending">0</span></td>
+                    <td><span class="badge approved">2</span></td>
+                    <td><span class="badge rejected">0</span></td>
+                </tr>
+
+                <tr>
+                    <td>Academic Leave</td>
+                    <td>1</td>
+                    <td><span class="badge pending">1</span></td>
+                    <td><span class="badge approved">0</span></td>
+                    <td><span class="badge rejected">0</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <!-- Summary -->
+    <h3>Summary</h3>
+    <div class="summary">
+
+        <div class="summary-box">
+            <p>Approval Rate</p>
+            <h2>67%</h2>
+        </div>
+
+        <div class="summary-box">
+            <p>Rejection Rate</p>
+            <h2>0%</h2>
+        </div>
+
+        <div class="summary-box">
+            <p>Pending Rate</p>
+            <h2>33%</h2>
+        </div>
+
+    </div>
+
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    loadEmployeeCount();
+    loadLeaveCounts();
+    loadLeaveTypeBreakdown();
+});
+
+// 1. Total Employees
+function loadEmployeeCount() {
+    fetch("http://localhost:5000/admin/employee-count")
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.querySelectorAll(".cards .card")[0].querySelector("h2").innerText = data.total;
+        }
+    });
+}
+
+// 2. Leave Stats
+function loadLeaveCounts() {
+    fetch("http://localhost:5000/admin/leave-counts")
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success) return;
+
+        const c = data.data;
+        const cards = document.querySelectorAll(".cards .card");
+
+        cards[1].querySelector("h2").innerText = c.total;
+        cards[2].querySelector("h2").innerText = c.pending;
+        cards[3].querySelector("h2").innerText = c.approved;
+        cards[4].querySelector("h2").innerText = c.rejected;
+
+        // Update summary %
+        let total = c.total === 0 ? 1 : c.total;
+        document.querySelector(".summary-box:nth-child(1) h2").innerText = Math.round((c.approved / total) * 100) + "%";
+        document.querySelector(".summary-box:nth-child(2) h2").innerText = Math.round((c.rejected / total) * 100) + "%";
+        document.querySelector(".summary-box:nth-child(3) h2").innerText = Math.round((c.pending / total) * 100) + "%";
+    });
+}
+
+// 3. Leave Type Breakdown
+function loadLeaveTypeBreakdown() {
+    fetch("http://localhost:5000/admin/leave-type-breakdown")
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success) return;
+
+        const tbody = document.querySelector(".table-card tbody");
+        tbody.innerHTML = "";
+
+        data.data.forEach(row => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${row.leave_type}</td>
+                    <td>${row.total}</td>
+                    <td><span class="badge pending">${row.pending}</span></td>
+                    <td><span class="badge approved">${row.approved}</span></td>
+                    <td><span class="badge rejected">${row.rejected}</span></td>
+                </tr>
+            `;
+        });
+    });
+}
+</script>
+</body>
+</html>

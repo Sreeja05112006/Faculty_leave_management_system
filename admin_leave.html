@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Leave Applications</title>
+    <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <link href="admin_leave.css" rel="stylesheet">
+</head>
+<body>
+    <script>
+if (!localStorage.getItem("admin_id")) {
+    window.location.href = "index.html";
+}
+</script>
+    <div class="sidebar">
+        <div class="sidebar-content">
+            <div class="logo">
+                <img src="logo.jpeg" class="logo-img"> 
+                <span class="logo-name">Admin</span>
+            </div>
+            <ul class="lists">
+                <li class="list">
+                    <a href="admin_dashboard.html" class="nav-link" id="nav-link">
+                        <i class="bx bx-home-alt icon"></i>
+                        <span class="link">Dashboard</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="admin_employees.html" class="nav-link" id="nav-link">
+                        <i class="bx bx-group icon"></i>
+                        <span class="link">Employees List</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="admin_leave.html" class="nav-link">
+                        <i class="bx bx-calendar-event icon"></i>
+                        <span class="link">Leave Applications</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="admin_reports.html" class="nav-link">
+                        <i class="bx bx-line-chart icon"></i>
+                        <span class="link">Reports</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="index.html" class="nav-link" onclick="localStorage.clear()">
+    <i class="bx bx-log-out icon"></i>
+    <span class="link">Logout</span>
+</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+<div class="container">
+
+    <h2>Leave Applications</h2>
+
+    <!-- Filters -->
+    <div class="filters">
+        <span>Filter by Status:</span>
+
+        <button class="filter active" onclick="filterData('all')">
+            All (<span id="countAll">0</span>)
+        </button>
+
+        <button class="filter" onclick="filterData('pending')">
+            Pending (<span id="countPending">0</span>)
+        </button>
+
+        <button class="filter" onclick="filterData('approved')">
+            Approved (<span id="countApproved">0</span>)
+        </button>
+
+        <button class="filter" onclick="filterData('rejected')">
+           Rejected (<span id="countRejected">0</span>)
+        </button>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+        <table id="table">
+
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Leave Type</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Days</th>
+                    <th>Reason</th>
+                    <th>Applied On</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="adminLeaveBody">
+                <!-- Dynamic rows will come here -->
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+<script>
+function filterData(status) {
+    const rows = document.querySelectorAll("#adminLeaveBody tr");
+
+    rows.forEach(row => {
+        const rowStatus = row.getAttribute("data-status");
+
+        if (status === "all") {
+            row.style.display = "table-row";
+        } else {
+            row.style.display = (rowStatus === status) ? "table-row" : "none";
+        }
+    });
+
+    // Highlight selected filter button
+    document.querySelectorAll(".filter").forEach(btn => btn.classList.remove("active"));
+    event.target.classList.add("active");
+}
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const d = String(date.getDate()).padStart(2, "0");
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const y = date.getFullYear();
+    return `${d}-${m}-${y}`;
+}
+
+// Load all leave requests
+function loadAllLeaves() {
+    fetch("http://localhost:5000/admin/leave-requests")
+    .then(res => res.json())
+    .then(data => {
+        const body = document.getElementById("adminLeaveBody");
+        body.innerHTML = "";
+
+        data.forEach(row => {
+            body.innerHTML += `
+                <tr data-status="${row.status}">
+                    <td>${row.name}</td>
+                    <td>${row.leave_type}</td>
+                    <td>${formatDate(row.from_date)}</td>
+                    <td>${formatDate(row.to_date)}</td>
+                    <td>${row.days}</td>
+                    <td>${row.reason}</td>
+                    <td>${formatDate(row.applied_on)}</td>
+                    <td><span class="badge ${row.status}">${row.status}</span></td>
+                    <td>
+                        ${row.status === 'pending'
+                            ? `
+                                <button class="btn approve" onclick="updateStatus(${row.leave_id}, 'approved')">Approve</button>
+                                <button class="btn reject" onclick="updateStatus(${row.leave_id}, 'rejected')">Reject</button>
+                              `
+                            : `<span class="processed">Processed</span>`
+                        }
+                    </td>
+                </tr>
+            `;
+        });
+    })
+    .catch(err => console.log(err));
+}
+
+// Approve or Reject a request
+function updateStatus(leave_id, status) {
+    fetch("http://localhost:5000/admin/update", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ leave_id, status })
+    })
+    .then(res => res.json())
+    .then(msg => {
+        alert(msg.message);
+        loadAllLeaves();   // reload after update
+        loadLeaveCounts(); 
+    });
+}
+
+function loadLeaveCounts() {
+    fetch("http://localhost:5000/admin/leave-counts")
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) return;
+
+            const c = data.data;
+
+            document.getElementById("countAll").innerText = c.total;
+            document.getElementById("countPending").innerText = c.pending;
+            document.getElementById("countApproved").innerText = c.approved;
+            document.getElementById("countRejected").innerText = c.rejected;
+        })
+        .catch(err => console.log(err));
+}
+document.addEventListener("DOMContentLoaded", function () {
+    loadAllLeaves();
+    loadLeaveCounts();
+});
+
+</script>
+<script src="admin_leave.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+    <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <link href="faculty_myAppl.css" rel="stylesheet">
+</head>
+<body>
+    <script>
+if (!localStorage.getItem("faculty_id")) {
+    window.location.href = "index.html";
+}
+</script>
+    <div class="sidebar">
+        <div class="sidebar-content">
+            <div class="logo">
+                <img src="logo.jpeg" class="logo-img"> 
+                <span class="logo-name">Faculty</span>
+            </div>
+            <ul class="lists">
+                <li class="list">
+                    <a href="faculty_dashboard.html" class="nav-link">
+                        <i class="bx bx-home-alt icon"></i>
+                        <span class="link">Dashboard</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="faculty_apply.html" class="nav-link">
+                        <i class="bx bx-plus-circle icon"></i>
+                        <span class="link">Apply Leave</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="faculty_myApplications.html" class="nav-link">
+                        <i class="bx bx-history icon"></i>
+                        <span class="link">Leave History</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="index.html" class="nav-link" onclick="localStorage.clear()">
+    <i class="bx bx-log-out icon"></i>
+    <span class="link">Logout</span>
+</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="container">
+        <h2 class="form-title">Leave History</h2>
+        <div class="card">
+        <table>
+            <thead>
+                <tr>
+                <th>Leave Type</th>
+                <th>From Date</th>
+                <th>To Date</th>
+                <th>Days</th>
+                <th>Applied on</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody id="historyBody">
+            <!-- Dynamic rows will be inserted here -->
+        </tbody>
+    </table>
+    </div>
+    </div>
+<script>
+
+function cancelLeave(leaveId) {
+    if (!confirm("Are you sure you want to cancel this leave request?")) {
+        return;
+    }
+
+    fetch(`http://localhost:5000/faculty/cancel/${leaveId}`, {
+        method: "DELETE"
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success) {
+            alert(data.message);
+            loadHistory();
+            // return;
+        }
+
+        alert("Leave request cancelled successfully!");
+        loadHistory();
+    })
+    .catch(err => console.log(err));
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+}
+function loadHistory() {
+    const faculty_id = localStorage.getItem("faculty_id");
+    fetch(`http://localhost:5000/faculty/my-applications/${faculty_id}`)
+    .then(res => res.json())
+    .then(data => {
+        const body = document.getElementById("historyBody");
+        body.innerHTML = "";
+
+        data.forEach(row => {
+            body.innerHTML += `
+                <tr>
+                    <td>${row.leave_type}</td>
+                    <td>${formatDate(row.from_date)}</td>
+                    <td>${formatDate(row.to_date)}</td>
+                    <td>${row.days}</td>
+                    <td>${formatDate(row.applied_on)}</td>
+                    <td>${row.reason}</td>
+                    <td>${row.status}</td>
+                    <td>
+                        ${
+                            row.status === "pending"
+                            ? `<i class="bx bx-x-circle cancel-btn" title="Cancel Leave" onclick="cancelLeave(${row.leave_id})"></i>`
+                            : `<i class="bx bx-block" style="color:gray; cursor:not-allowed;" title="Only pending requests can be cancelled"></i>`
+                        }
+                    </td>
+                </tr>
+            `;
+        });
+    })
+    .catch(err => console.log(err));
+}
+
+// Load history when page opens
+window.onload = loadHistory;
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+.container {
+    margin-top: 30px;
+    margin-left: 300px;
+    padding: 20px;
+}
+h1 {
+    margin-bottom: 20px;
+}
+
+h3 {
+    margin: 25px 0 15px;
+}
+
+/* Cards */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    padding: 45px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+.card h2 {
+    margin-bottom: 5px;
+}
+
+/* Colors */
+.yellow { background: #f7e6b5; }
+.green { background: #cfe8d5; }
+.red { background: #f3c6c6; }
+
+/* Table */
+.table-card {
+    padding: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: center;
+    padding: 12px;
+    border-bottom: 2px solid #ddd;
+}
+
+td {
+    text-align: center;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Badges */
+.badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    color: white;
+    font-size: 13px;
+}
+
+.pending { background: orange; }
+.approved { background: green; }
+.rejected { background: red; }
+
+/* Summary */
+.summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.summary-box {
+    background: white;
+    padding: 60px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+.summary-box h2 {
+    color: #6c7ae0;
+    margin-top: 10px;
+}

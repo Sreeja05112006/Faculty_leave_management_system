@@ -1,0 +1,99 @@
+.container {
+    margin-top: 30px;
+    margin-left: 300px;
+    padding: 20px;
+}
+.container h2{
+    margin-bottom: 20px;
+}
+/* Filters */
+.filters {
+    margin-bottom: 20px;
+}
+
+.filters span {
+    font-weight: 500;
+}
+
+.filter {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.filter.active {
+    background: #6c7ae0;
+    color: white;
+}
+
+/* Card */
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 2px solid #ddd;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Badges */
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: white;
+}
+
+.pending {
+    background: orange;
+}
+
+.approved {
+    background: green;
+}
+
+.rejected {
+    background: red;
+}
+
+/* Buttons */
+.btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.approve {
+    background: #28a745;
+    color: white;
+}
+
+.reject {
+    background: #dc3545;
+    color: white;
+}
+
+.processed {
+    color: gray;
+    font-style: italic;
+}

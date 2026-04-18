@@ -1,0 +1,79 @@
+.container {
+    margin-top: 30px;
+    margin-left: 300px;
+    padding: 20px;
+}
+.container .h1{
+    margin: 25px 0 0 25px;
+}
+.dashboard {
+    padding: 20px;
+}
+
+
+/* Layout */
+.top-section {
+    display: flex;
+    gap: 20px;
+}
+
+/* Cards */
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    flex: 1;
+    margin-bottom: 25px;
+    margin-top: 15px;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th {
+    background: #1e3c72;
+    color: white;
+    padding: 10px;
+    text-align: left;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Stats */
+.stats {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.stat-box {
+    flex: 1;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Colors */
+.total {
+    background: #f1f2f6;
+}
+
+.approved {
+    background: #c8e6c9;
+}
+
+.rejected {
+    background: #ffcdd2;
+}
+
+.pending {
+    background: #fff3cd;
+}

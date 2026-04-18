@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <link href="admin.css" rel="stylesheet">
+</head>
+<body>
+    <script>
+if (!localStorage.getItem("admin_id")) {
+    window.location.href = "index.html";
+}
+</script>
+    <div class="sidebar">
+        <div class="sidebar-content">
+            <div class="logo">
+                <img src="logo.jpeg" class="logo-img"> 
+                <span class="logo-name">Admin</span>
+            </div>
+            <ul class="lists">
+                <li class="list">
+                    <a href="admin_dashboard.html" class="nav-link" id="nav-link">
+                        <i class="bx bx-home-alt icon"></i>
+                        <span class="link">Dashboard</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="admin_employees.html" class="nav-link" id="nav-link">
+                        <i class="bx bx-group icon"></i>
+                        <span class="link">Employees List</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="admin_leave.html" class="nav-link">
+                        <i class="bx bx-calendar-event icon"></i>
+                        <span class="link">Leave Applications</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="admin_reports.html" class="nav-link">
+                        <i class="bx bx-line-chart icon"></i>
+                        <span class="link">Reports</span>
+                    </a>
+                </li>
+                <li class="list">
+                    <a href="index.html" class="nav-link" onclick="localStorage.clear()">
+    <i class="bx bx-log-out icon"></i>
+    <span class="link">Logout</span>
+</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="container">
+        <div class="greet">
+            <h1>Welcome, Admin</h1>
+        </div>
+        <div class="cards">
+
+        <div class="card blue">
+            <i class="bx bx-group"></i>
+            <h3>120</h3>
+            <p>Total Employees</p>
+        </div>
+
+        <div class="card gray">
+            <i class="bx bx-file"></i>
+            <h3>45</h3>
+            <p>Total Applications</p>
+        </div>
+
+        <div class="card yellow">
+            <i class="bx bx-time-five"></i>
+            <h3>10</h3>
+            <p>Pending</p>
+        </div>
+
+        <div class="card green">
+            <i class="bx bx-check-circle"></i>
+            <h3>25</h3>
+            <p>Approved</p>
+        </div>
+
+        <div class="card red">
+            <i class="bx bx-x-circle"></i>
+            <h3>10</h3>
+            <p>Rejected</p>
+        </div>
+        </div>
+        <div class="middle">
+
+        <!-- Chart -->
+        <div class="card chart-card">
+            <h3>Application Overview</h3>
+            <canvas id="myChart"></canvas>
+        </div>
+
+        <!-- Notifications -->
+        <div class="card">
+            <h3>Notifications</h3>
+            <p>🔔 5 new leave requests</p>
+            <p>✔ 2 approved today</p>
+            <p>❌ 1 rejected today</p>
+        </div>
+
+    </div>
+     <!-- Bottom Table -->
+    <div class="card">
+        <h3>Recent Applications</h3>
+
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Status</th>
+            </tr>
+            <tr>
+                <td>Rajesh</td>
+                <td>Casual</td>
+                <td style="color: orange;">Pending</td>
+            </tr>
+            <tr>
+                <td>Priya</td>
+                <td>Medical</td>
+                <td style="color: green;">Approved</td>
+            </tr>
+            <tr>
+                <td>Arun</td>
+                <td>Vacation</td>
+                <td style="color: red;">Rejected</td>
+            </tr>
+        </table>
+    </div>
+    <!-- Chart Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById("myChart"), {
+    type: "pie",
+    data: {
+        labels: ["Approved", "Pending", "Rejected"],
+        datasets: [{
+            data: [25, 10, 10]
+        }]
+    }
+});
+</script>
+</body>
+</html>
